@@ -3,18 +3,22 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { PERSONAL_INFO } from "@/data/portfolioData";
+import { useScrollSpy } from "@/hooks/useScrollSpy";
 import { Menu, X, ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function NavbarFloating() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Experiencia", href: "#experiencia" },
-    { name: "Proyectos", href: "#proyectos" },
-    { name: "Stack Técnico", href: "#stack" },
-    { name: "Métricas", href: "#metricas" },
-    { name: "Contacto", href: "#contacto" },
+    { name: "Experiencia", href: "#experiencia", id: "experiencia" },
+    { name: "Proyectos", href: "#proyectos", id: "proyectos" },
+    { name: "Stack Técnico", href: "#stack", id: "stack" },
+    { name: "Métricas", href: "#metricas", id: "metricas" },
+    { name: "Contacto", href: "#contacto", id: "contacto" },
   ];
+
+  const activeSection = useScrollSpy(navLinks.map((l) => l.id));
 
   return (
     <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 sm:px-6">
@@ -39,17 +43,25 @@ export function NavbarFloating() {
           </div>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors duration-150"
-            >
-              {link.name}
-            </Link>
-          ))}
+        {/* Desktop Navigation Links with Active Indicator */}
+        <div className="hidden md:flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.05]">
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.id;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 relative",
+                  isActive
+                    ? "text-white bg-white/[0.12] shadow-sm font-semibold border border-white/[0.15]"
+                    : "text-slate-300 hover:text-white hover:bg-white/[0.06]"
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Action Button & Status */}
@@ -58,7 +70,7 @@ export function NavbarFloating() {
             href={PERSONAL_INFO.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-white/[0.08] hover:bg-white/[0.15] text-slate-200 hover:text-white border border-white/[0.1] rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold bg-white/[0.08] hover:bg-white/[0.15] text-slate-200 hover:text-white border border-white/[0.1] rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
             <span>LinkedIn</span>
             <ArrowUpRight className="w-3.5 h-3.5 opacity-70" />
@@ -79,16 +91,24 @@ export function NavbarFloating() {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="absolute top-16 left-4 right-4 glass-nav rounded-2xl p-4 flex flex-col gap-2 md:hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-4 py-2.5 text-sm font-medium text-slate-200 hover:text-white hover:bg-white/[0.08] rounded-xl transition-colors"
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.id;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  "px-4 py-2.5 text-sm font-medium rounded-xl transition-colors",
+                  isActive
+                    ? "text-white bg-white/[0.12] font-bold"
+                    : "text-slate-200 hover:text-white hover:bg-white/[0.08]"
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
           <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
             <span className="text-xs text-emerald-400 font-mono flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
